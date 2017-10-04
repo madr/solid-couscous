@@ -1,0 +1,4 @@
+*.pyc
+.project
+.i*
+node_modules
