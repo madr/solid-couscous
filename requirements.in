@@ -1,0 +1,5 @@
+beautifulsoup4==4.6.0
+Django==1.11.5
+pip-tools==1.10.1
+pytest==3.2.3
+requests==2.18.4
