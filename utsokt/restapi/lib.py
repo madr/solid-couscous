@@ -24,3 +24,27 @@ class StoryTeller:
         if not title:
             title = self.url
         return title, excerpt
+
+
+class JsonApiMapper:
+    def attributes(self, item):
+        raise NotImplemented
+
+    def payload(self, data):
+        return {
+            'data': [{
+                'type': 'story',
+                'id': item.id,
+                'attributes': self.attributes(item)
+            } for item in data],
+            'version': '1.0',
+        }
+
+
+class StoryMapper(JsonApiMapper):
+    def attributes(self, item):
+        return {
+            'url': item.url,
+            'title': item.title,
+            'excerpt': item.excerpt,
+        }

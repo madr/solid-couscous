@@ -1,8 +1,9 @@
+from collections import namedtuple
 from unittest.mock import patch
 
 from django.test import TestCase
 
-from utsokt.restapi.lib import StoryTeller
+from utsokt.restapi.lib import StoryTeller, JsonApiMapper
 from utsokt.restapi.tests.mocks import (
     mocked_requests_get, PAGE_TITLE, OG_TITLE, OG_DESCRIPTION, URL_NO_OG_TITLE,
     URL_FULL_OG,
@@ -33,3 +34,40 @@ class StoryTellerTestCase(TestCase):
         story = StoryTeller(URL_NO_TITLE)
         self.assertEqual(story.title, URL_NO_TITLE)
         self.assertEqual(story.excerpt, None)
+
+
+class JsonMapperTestCase(TestCase):
+    Item = namedtuple('Item', ['id', 'a', 'b'])
+
+    def test_payload(self):
+        class Mapper(JsonApiMapper):
+            def attributes(self, item):
+                return {
+                    'a': item.a,
+                    'b': item.b,
+                }
+
+        data = [
+            self.Item('xyz', 1, 0),
+            self.Item('abc', 3, 2),
+        ]
+        expected_payload = {
+            'data': [{
+                'id': 'xyz',
+                'type': 'story',
+                'attributes': {
+                    'a': 1,
+                    'b': 0,
+                },
+            }, {
+                'id': 'abc',
+                'type': 'story',
+                'attributes': {
+                    'a': 3,
+                    'b': 2,
+                },
+            }],
+            'version': '1.0',
+        }
+        payload = Mapper().payload(data)
+        self.assertEqual(payload, expected_payload)
