@@ -8,9 +8,9 @@ URL_NO_TITLE = 'http://example.com/empty.html'
 
 
 def mocked_requests_get(*args, **kwargs):
-    html_og = '<html><head><title>{}</title><meta property="og:title" value="{}"><meta property="og:description" value="{}"></head></html>'.format(
+    html_og = '<html><head><title>{}</title><meta property="og:title" content="{}"><meta property="og:description" content="{}"></head></html>'.format(
         PAGE_TITLE, OG_TITLE, OG_DESCRIPTION)
-    html_og_no_title = '<html><head><title>{}</title><meta property="og:description" value="{}"></head></html>'.format(
+    html_og_no_title = '<html><head><title>{}</title><meta property="og:description" content="{}"></head></html>'.format(
         PAGE_TITLE, OG_DESCRIPTION)
     html_no_og = '<html><head><title>{}</title></head></html>'.format(PAGE_TITLE)
     html_empty = '<html></html>'

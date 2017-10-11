@@ -18,9 +18,9 @@ class StoryTeller:
             title = doc.title.string
         for og_data in doc.find_all('meta', attrs={'property': re.compile(r'^og\:')}):
             if og_data.attrs['property'] == 'og:title':
-                title = og_data.attrs['value']
+                title = og_data.attrs['content']
             if og_data.attrs['property'] == 'og:description':
-                excerpt = og_data.attrs['value']
+                excerpt = og_data.attrs['content']
         if not title:
             title = self.url
         return title, excerpt
