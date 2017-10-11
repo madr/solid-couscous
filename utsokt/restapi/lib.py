@@ -18,9 +18,33 @@ class StoryTeller:
             title = doc.title.string
         for og_data in doc.find_all('meta', attrs={'property': re.compile(r'^og\:')}):
             if og_data.attrs['property'] == 'og:title':
-                title = og_data.attrs['value']
+                title = og_data.attrs['content']
             if og_data.attrs['property'] == 'og:description':
-                excerpt = og_data.attrs['value']
+                excerpt = og_data.attrs['content']
         if not title:
             title = self.url
         return title, excerpt
+
+
+class JsonApiMapper:
+    def attributes(self, item):
+        raise NotImplemented
+
+    def payload(self, data):
+        return {
+            'data': [{
+                'type': 'story',
+                'id': item.id,
+                'attributes': self.attributes(item)
+            } for item in data],
+            'version': '1.0',
+        }
+
+
+class StoryMapper(JsonApiMapper):
+    def attributes(self, item):
+        return {
+            'url': item.url,
+            'title': item.title,
+            'excerpt': item.excerpt,
+        }

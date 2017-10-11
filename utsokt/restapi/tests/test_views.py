@@ -1,3 +1,4 @@
+import json
 from unittest import TestCase
 from unittest.mock import patch
 
@@ -110,3 +111,39 @@ class CreateStoryTestCase(TestCase):
             story = Story.objects.get(url='https://madr.se/g')
             self.assertEqual(story.title, mocked_title)
             self.assertIsNone(story.excerpt)
+
+
+class ListStoriesTestCase(TestCase):
+    def setUp(self):
+        self.client = Client(HTTP_USER_AGENT='Mozilla/5.0')
+        Story.objects.all().delete()
+        Story.objects.create(url='http://example.com/1.html', title='Page 1')
+        Story.objects.create(url='http://example.com/2.html', title='Page 2', is_unread=False)
+        Story.objects.create(url='http://example.com/3.html', title='Page 3', is_unread=False)
+
+    def test_list_stories(self):
+        response = self.client.get('/api/story/')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response['Content-Type'], 'application/json')
+        payload = json.loads(response.content.decode("utf-8"))
+        self.assertEqual(len(payload['data']), 3)
+        self.assertEqual(payload['data'][0]['attributes']['title'], 'Page 3')
+        self.assertEqual(payload['data'][1]['attributes']['title'], 'Page 2')
+        self.assertEqual(payload['data'][2]['attributes']['title'], 'Page 1')
+
+    def test_filter_unread_stories(self):
+        response = self.client.get('/api/story/?unread=1')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response['Content-Type'], 'application/json')
+        payload = json.loads(response.content.decode("utf-8"))
+        self.assertEqual(len(payload['data']), 1)
+        self.assertEqual(payload['data'][0]['attributes']['title'], 'Page 1')
+
+    def test_filter_read_stories(self):
+        response = self.client.get('/api/story/?read=1')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response['Content-Type'], 'application/json')
+        payload = json.loads(response.content.decode("utf-8"))
+        self.assertEqual(len(payload['data']), 2)
+        self.assertEqual(payload['data'][0]['attributes']['title'], 'Page 3')
+        self.assertEqual(payload['data'][1]['attributes']['title'], 'Page 2')
