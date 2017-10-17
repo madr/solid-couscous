@@ -15,8 +15,10 @@ Including another URLconf
 """
 from django.conf.urls import url, include
 from django.contrib import admin
+from utsokt.batch_create import views as batch_create_views
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
-    url(r'^api/', include('utsokt.restapi.urls'))
+    url(r'^api/', include('utsokt.restapi.urls')),
+    url(r'^batch/', include('utsokt.batch_create.urls')),
 ]
