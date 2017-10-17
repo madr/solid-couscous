@@ -2,6 +2,9 @@ import re
 
 import requests
 from bs4 import BeautifulSoup
+from django.http import HttpResponse
+
+from utsokt.restapi.models import Story
 
 
 class StoryTeller:
@@ -48,3 +51,21 @@ class StoryMapper(JsonApiMapper):
             'title': item.title,
             'excerpt': item.excerpt,
         }
+
+
+def create_story(input_data):
+    url = input_data.get('url', None)
+    if not url:
+        return HttpResponse(status=400)
+    title = input_data.get('title', None)
+    excerpt = input_data.get('excerpt', None)
+    if not title:
+        story_data = StoryTeller(url)
+        title = story_data.title
+        excerpt = story_data.excerpt
+    story, created = Story.objects.get_or_create(url=url)
+    story.title = title
+    story.excerpt = excerpt
+    story.save()
+    status = 201 if created else 204
+    return HttpResponse(status=status)

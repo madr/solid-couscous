@@ -1,9 +1,9 @@
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404
 from django.views.decorators.csrf import csrf_exempt
-from django.views.decorators.http import require_POST, require_http_methods, require_GET
+from django.views.decorators.http import require_POST, require_http_methods
 
-from utsokt.restapi.lib import StoryTeller, JsonApiMapper, StoryMapper
+from utsokt.restapi.lib import StoryMapper, create_story
 from utsokt.restapi.models import Story
 
 
@@ -18,29 +18,11 @@ def _list_stories(params):
     return JsonResponse(payload)
 
 
-def _create_story(post_data):
-    url = post_data.get('url', None)
-    if not url:
-        return HttpResponse(status=400)
-    title = post_data.get('title', None)
-    excerpt = post_data.get('excerpt', None)
-    if not title:
-        data = StoryTeller(url)
-        title = data.title
-        excerpt = data.excerpt
-    story, created = Story.objects.get_or_create(url=url)
-    story.title = title
-    story.excerpt = excerpt
-    story.save()
-    status = 201 if created else 204
-    return HttpResponse(status=status)
-
-
 @csrf_exempt
 @require_http_methods(['POST', 'GET'])
 def list_or_create(request):
     if request.method == 'POST':
-        return _create_story(request.POST)
+        return create_story(request.POST)
     elif request.method == 'GET':
         return _list_stories(request.GET)
 
