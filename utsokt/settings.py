@@ -55,8 +55,9 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'utsokt.restapi',
     'utsokt.batch_create',
+    'utsokt.restapi',
+    'utsokt.slackbot',
 ]
 
 MIDDLEWARE = [

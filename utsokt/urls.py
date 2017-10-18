@@ -21,4 +21,5 @@ urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^api/', include('utsokt.restapi.urls')),
     url(r'^batch/', include('utsokt.batch_create.urls')),
+    url(r'^', include('utsokt.slackbot.urls')),
 ]
