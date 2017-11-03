@@ -9,5 +9,8 @@ class Story(models.Model):
     created_at = models.TimeField(_('Created at'), auto_now_add=True)
     is_unread = models.BooleanField(_('Is unread?'), default=True)
 
+    def __str__(self):
+        return self.title
+
     class Meta:
         ordering = ['-created_at']
